@@ -1,0 +1,9 @@
+production: false
+http:
+  listen: ':10080'
+redis:
+  address: 'localhost:6379'
+log:
+  level: debug
+storage:
+  uploads_dir: data

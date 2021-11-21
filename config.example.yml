@@ -1,0 +1,17 @@
+# Production mode toggle
+production: true
+http:
+  # HTTP server listen port
+  listen: ':80'
+
+redis:
+  # Redis address
+  address: 'localhost:6379'
+
+log:
+  # Log level
+  level: debug
+
+storage:
+  # Files upload directory
+  uploads_dir: path/to/uploads
