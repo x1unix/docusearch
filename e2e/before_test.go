@@ -27,9 +27,8 @@ func TestMain(m *testing.M) {
 	log.Println("Starting e2e test. Config file can be provided via E2E_CONFIG_FILE env variable.")
 	cfgFile, ok := os.LookupEnv("E2E_CONFIG_FILE")
 	if !ok {
-		log.Println("Please set config file path in E2E_CONFIG_FILE environment variable:",
+		log.Fatalln("Please set config file path in E2E_CONFIG_FILE environment variable:",
 			"\n\t$ export E2E_CONFIG_FILE=config.dev.yml\n", "")
-		cfgFile = "../config.dev.yml"
 	}
 
 	cfg, err := config.FromFile(cfgFile)
