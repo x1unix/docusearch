@@ -1,7 +1,8 @@
 GO ?= go
 
-CFG = config.dev.yml
-PKG = ./cmd/docusearchd
+CFG 				?= config.dev.yml
+E2E_CONFIG_FILE 	?= ../$(CFG)
+PKG 				= ./cmd/docusearchd
 
 .PHONY: all
 all: build test
@@ -21,3 +22,7 @@ run:
 .PHONY: test
 test:
 	@go test -v ./...
+
+.PHONY: e2e
+e2e:
+	@E2E_CONFIG_FILE=$(E2E_CONFIG_FILE) go test -v ./e2e/...
