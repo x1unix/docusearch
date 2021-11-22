@@ -3,6 +3,7 @@ package search
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/go-redis/redis/v8"
 	"go.uber.org/zap"
@@ -30,7 +31,7 @@ func NewRedisProvider(log *zap.Logger, conn redis.Cmdable) *RedisProvider {
 
 // SearchDocumentsByWord implements DocumentSearcher
 func (r RedisProvider) SearchDocumentsByWord(ctx context.Context, word string) ([]string, error) {
-	key := wordKeyPrefix + word
+	key := wordKeyPrefix + strings.ToLower(word)
 	return r.conn.SMembers(ctx, key).Result()
 }
 
