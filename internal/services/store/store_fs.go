@@ -15,6 +15,11 @@ type FileDocumentStore struct {
 
 // AddDocument implements DocumentStore
 func (f FileDocumentStore) AddDocument(_ context.Context, name string, data io.Reader) error {
+	// Pre-create directory if not exists
+	if err := os.MkdirAll(f.storageDir, os.ModeSticky|os.ModePerm); err != nil {
+		return fmt.Errorf("failed to create storage directory: %w", err)
+	}
+
 	// Create a file but check if file already exists.
 	// os.OpenFile returns fs.ErrExist if file already exists.
 	fd, err := os.OpenFile(filepath.Join(f.storageDir, name), os.O_RDWR|os.O_CREATE|os.O_EXCL, 0666)
