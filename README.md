@@ -2,6 +2,8 @@
 
 Simple document upload and search service.
 
+[![swagger-api validator-badge](http://online.swagger.io/validator?url=https://raw.githubusercontent.com/x1unix/docusearch/master/swagger.yml)](./swagger.yml)
+
 ## Goal
 
 Create a simple service that allows to upload text files and search which text files contain a specified word.
