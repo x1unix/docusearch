@@ -2,7 +2,7 @@
 
 Simple document upload and search service.
 
-[![swagger-api validator-badge](http://online.swagger.io/validator?url=https://raw.githubusercontent.com/x1unix/docusearch/master/swagger.yml)](./swagger.yml)
+[![swagger-api validator-badge](http://online.swagger.io/validator?url=https://raw.githubusercontent.com/x1unix/docusearch/master/swagger.yml)](https://editor.swagger.io/?url=https://raw.githubusercontent.com/x1unix/docusearch/master/swagger.yml)
 
 ## Goal
 
