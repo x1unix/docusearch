@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/x1unix/docusearch/internal/config"
+	"github.com/x1unix/docusearch/internal/services"
 	"github.com/x1unix/docusearch/internal/web"
 	"go.uber.org/zap"
 )
@@ -35,14 +37,28 @@ func main() {
 }
 
 func start(log *zap.Logger, cfg *config.Config) error {
+	redisConn, err := cfg.RedisClient()
+	if err != nil {
+		return err
+	}
+
+	if err := redisConn.Ping(context.Background()).Err(); err != nil {
+		return fmt.Errorf("failed to connect to Redis: %w", err)
+	}
+
+	echo.NotFoundHandler = web.FancyHandleNotFound
 	e := echo.New()
 	e.Use(echozap.ZapLogger(log))
 	e.Use(middleware.Recover())
 
+	searchProvider := services.NewRedisSearchProvider(log.Named("search.redis"), redisConn)
 	docHandler := web.NewDocumentsHandler(log.Named("handler.docs"), nil)
+	searchHandler := web.NewSearchHandler(log.Named("handler.search"), searchProvider)
+
 	e.POST("/document/:id", docHandler.UploadDocument)
 	e.GET("/document/:id", docHandler.GetDocument)
 	e.DELETE("/document/:id", docHandler.DeleteDocument)
+	e.GET("/search", searchHandler.SearchWord)
 
 	srv := &http.Server{
 		Addr:    cfg.HTTP.Listen,
