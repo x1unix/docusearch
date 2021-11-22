@@ -7,16 +7,16 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/x1unix/docusearch/internal/services"
+	"github.com/x1unix/docusearch/internal/services/store"
 	"go.uber.org/zap"
 )
 
 type DocumentsHandler struct {
 	log            *zap.Logger
-	documentsStore services.DocumentStore
+	documentsStore store.DocumentStore
 }
 
-func NewDocumentsHandler(log *zap.Logger, s services.DocumentStore) *DocumentsHandler {
+func NewDocumentsHandler(log *zap.Logger, s store.DocumentStore) *DocumentsHandler {
 	return &DocumentsHandler{
 		log:            log,
 		documentsStore: s,
@@ -28,7 +28,7 @@ func (h DocumentsHandler) UploadDocument(c echo.Context) error {
 
 	body := c.Request().Body
 	defer body.Close()
-	if err := h.documentsStore.AddDocument(docID, body); err != nil {
+	if err := h.documentsStore.AddDocument(c.Request().Context(), docID, body); err != nil {
 		if errors.Is(err, fs.ErrExist) {
 			return echo.NewHTTPError(http.StatusBadRequest, "item already exists")
 		}
@@ -42,7 +42,7 @@ func (h DocumentsHandler) UploadDocument(c echo.Context) error {
 
 func (h DocumentsHandler) DeleteDocument(c echo.Context) error {
 	docID := c.Param("id")
-	if err := h.documentsStore.RemoveDocument(docID); err != nil {
+	if err := h.documentsStore.RemoveDocument(c.Request().Context(), docID); err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
 			return echo.NewHTTPError(http.StatusNotFound, "document not found")
 		}
