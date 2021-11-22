@@ -1,7 +1,9 @@
 package collections
 
+type void = struct{}
+
 // StringsSet is a list of unique strings.
-type StringsSet map[string]struct{}
+type StringsSet map[string]void
 
 // NewStringsSet constructs StringsSet from slice.
 func NewStringsSet(vals ...string) StringsSet {
@@ -13,7 +15,7 @@ func NewStringsSet(vals ...string) StringsSet {
 // Append appends value to a set.
 func (s StringsSet) Append(vals ...string) {
 	for _, v := range vals {
-		s[v] = struct{}{}
+		s[v] = void{}
 	}
 }
 
