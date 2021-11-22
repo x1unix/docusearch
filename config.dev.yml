@@ -5,5 +5,7 @@ redis:
   url: 'redis://localhost:6379'
 log:
   level: debug
+search:
+  ignore_common_words: true
 storage:
   uploads_dir: data

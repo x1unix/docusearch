@@ -28,6 +28,11 @@ type Config struct {
 		URL string `yaml:"url"`
 	}
 
+	Search struct {
+		// IgnoreCommonWords toggle ignore of common verbs and articles in English language.
+		IgnoreCommonWords bool `yaml:"ignore_common_words"`
+	} `yaml:"search"`
+
 	Storage struct {
 		// UploadsDirectory is uploaded files storage directory
 		UploadsDirectory string `yaml:"uploads_dir"`

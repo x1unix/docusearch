@@ -12,6 +12,10 @@ log:
   # Log level
   level: debug
 
+search:
+  # Ignore of common verbs and articles in English language for search.
+  ignore_common_words: true
+
 storage:
   # Files upload directory
   uploads_dir: path/to/uploads
