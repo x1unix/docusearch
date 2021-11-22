@@ -35,6 +35,8 @@ Ensure that you have [docker-compose](https://docs.docker.com/compose/) and late
 
 Use `make test` to run unit tests.
 
+Mocks can be updated using `make gen` command.
+
 ### End-to-end
 
 End-to-end tests are located at [e2e](e2e) directory.
