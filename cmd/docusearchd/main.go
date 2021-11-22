@@ -7,12 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/brpaz/echozap"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"github.com/x1unix/docusearch/internal/config"
-	"github.com/x1unix/docusearch/internal/services/search"
-	"github.com/x1unix/docusearch/internal/services/store"
 	"github.com/x1unix/docusearch/internal/web"
 	"go.uber.org/zap"
 )
@@ -48,25 +43,10 @@ func start(log *zap.Logger, cfg *config.Config) error {
 		return fmt.Errorf("failed to connect to Redis: %w", err)
 	}
 
-	echo.NotFoundHandler = web.FancyHandleNotFound
-	e := echo.New()
-	e.Use(echozap.ZapLogger(log))
-	e.Use(middleware.Recover())
-
-	searchProvider := search.NewRedisProvider(log.Named("search.redis"), redisConn)
-	syncStore := store.NewSyncedDocumentStore(log.Named("store"), store.NewFileDocumentStore(cfg.Storage.UploadsDirectory),
-		searchProvider, store.TextIndexConfig{IgnoreCommonWords: cfg.Search.IgnoreCommonWords})
-	docHandler := web.NewDocumentsHandler(log.Named("handler.docs"), syncStore)
-	searchHandler := web.NewSearchHandler(log.Named("handler.search"), searchProvider)
-
-	e.POST("/document/:id", docHandler.UploadDocument)
-	e.GET("/document/:id", docHandler.GetDocument)
-	e.DELETE("/document/:id", docHandler.DeleteDocument)
-	e.GET("/search", searchHandler.SearchWord)
-
+	svc := web.NewService(log, cfg, redisConn)
 	srv := &http.Server{
 		Addr:    cfg.HTTP.Listen,
-		Handler: e,
+		Handler: svc,
 	}
 
 	log.Info("starting http server...", zap.String("addr", cfg.HTTP.Listen))
