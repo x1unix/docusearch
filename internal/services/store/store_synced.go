@@ -46,7 +46,7 @@ func (s SyncedDocumentStore) AddDocument(ctx context.Context, name string, data 
 		return err
 	}
 
-	words := search.WordsFromString(string(buff.Bytes()), s.filterList)
+	words := search.WordsFromString(buff.String(), s.filterList)
 	if err := s.searchProvider.AddDocumentRef(ctx, name, words); err != nil {
 		return fmt.Errorf("failed to index document: %w", err)
 	}

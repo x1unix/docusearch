@@ -158,7 +158,7 @@ func TestSyncedDocumentStore_RemoveDocument(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			syncedStore := NewSyncedDocumentStore(zaptest.NewLogger(t), c.newStoreFn(t, ctrl),
 				c.newSearchFn(t, ctrl), TextIndexConfig{})
-			err := syncedStore.RemoveDocument(nil, c.name)
+			err := syncedStore.RemoveDocument(context.TODO(), c.name)
 			if c.wantErr != "" {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), c.wantErr)

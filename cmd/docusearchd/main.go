@@ -26,7 +26,7 @@ func main() {
 	if err != nil {
 		fatal(err)
 	}
-	defer log.Sync()
+	defer log.Sync() //nolint:errcheck
 	if err := start(log, cfg); err != nil {
 		log.Fatal("failed to start service", zap.Error(err))
 	}

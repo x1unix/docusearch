@@ -2,6 +2,7 @@ package store
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"io/fs"
 	"io/ioutil"
@@ -44,7 +45,7 @@ func TestFileDocumentStore_AddDocument(t *testing.T) {
 			}
 
 			s := NewFileDocumentStore(tmpDir)
-			err := s.AddDocument(nil, c.name, bytes.NewBuffer(c.data))
+			err := s.AddDocument(context.TODO(), c.name, bytes.NewBuffer(c.data))
 			if c.wantErr != nil {
 				require.Error(t, err)
 				require.True(t, errors.Is(err, c.wantErr))
@@ -89,7 +90,7 @@ func TestFileDocumentStore_RemoveDocument(t *testing.T) {
 			}
 
 			s := NewFileDocumentStore(tmpDir)
-			err := s.RemoveDocument(nil, c.name)
+			err := s.RemoveDocument(context.TODO(), c.name)
 			if c.wantErr != nil {
 				require.Error(t, err)
 				require.True(t, errors.Is(err, c.wantErr))
