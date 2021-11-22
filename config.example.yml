@@ -5,8 +5,8 @@ http:
   listen: ':80'
 
 redis:
-  # Redis address
-  address: 'localhost:6379'
+  # Redis connection URL
+  url: 'redis://user:password@localhost:6789/3?dial_timeout=3&db=1&read_timeout=6s&max_retries=2'
 
 log:
   # Log level

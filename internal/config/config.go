@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/go-redis/redis/v8"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/yaml.v3"
@@ -23,8 +24,8 @@ type Config struct {
 	} `yaml:"http"`
 
 	Redis struct {
-		// Address is Redis server address
-		Address string `yaml:"address"`
+		// URL is Redis server connection string.
+		URL string `yaml:"url"`
 	}
 
 	Storage struct {
@@ -48,6 +49,16 @@ func (cfg Config) Logger() (*zap.Logger, error) {
 
 	logCfg.Level = zap.NewAtomicLevelAt(cfg.Log.Level)
 	return logCfg.Build()
+}
+
+// RedisClient returns a new redis client from string
+func (cfg Config) RedisClient() (*redis.Client, error) {
+	connCfg, err := redis.ParseURL(cfg.Redis.URL)
+	if err != nil {
+		return nil, fmt.Errorf("invalid redis connection URL: %w", err)
+	}
+
+	return redis.NewClient(connCfg), nil
 }
 
 // FromFile loads configuration from file.
