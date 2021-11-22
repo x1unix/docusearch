@@ -4,7 +4,7 @@ CFG = config.dev.yml
 PKG = ./cmd/docusearchd
 
 .PHONY: all
-all: build
+all: build test
 
 .PHONY: gen
 gen:
@@ -18,3 +18,6 @@ build:
 run:
 	@go run $(PKG) -config $(CFG)
 
+.PHONY: test
+test:
+	@go test -v ./...
