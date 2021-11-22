@@ -7,8 +7,13 @@ import (
 	"io"
 
 	"github.com/x1unix/docusearch/internal/services/search"
+	"github.com/x1unix/docusearch/internal/utils/collections"
 	"go.uber.org/zap"
 )
+
+type TextIndexConfig struct {
+	IgnoreCommonWords bool
+}
 
 // initBufferSize is initial buffer size for document parse buffer
 const initBufferSize = 500 * 1024 // 500KB
@@ -19,6 +24,16 @@ type SyncedDocumentStore struct {
 	log            *zap.Logger
 	store          DocumentStore
 	searchProvider search.Provider
+	filterList     collections.StringsSet
+}
+
+func NewSyncedDocumentStore(log *zap.Logger, store DocumentStore, searchProvider search.Provider, cfg TextIndexConfig) *SyncedDocumentStore {
+	s := &SyncedDocumentStore{log: log, store: store, searchProvider: searchProvider}
+	if cfg.IgnoreCommonWords {
+		s.filterList = search.EnglishCommonVerbs
+	}
+
+	return s
 }
 
 // AddDocument implements DocumentStore
@@ -29,6 +44,11 @@ func (s SyncedDocumentStore) AddDocument(ctx context.Context, name string, data 
 	teeReader := io.TeeReader(data, buff)
 	if err := s.store.AddDocument(ctx, name, teeReader); err != nil {
 		return err
+	}
+
+	words := search.WordsFromString(string(buff.Bytes()), s.filterList)
+	if err := s.searchProvider.AddDocumentRef(ctx, name, words); err != nil {
+		return fmt.Errorf("failed to index document: %w", err)
 	}
 
 	return nil
