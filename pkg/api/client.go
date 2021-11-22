@@ -1,10 +1,14 @@
 package api
 
 import (
+	"encoding/json"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"path"
+
+	"github.com/x1unix/docusearch/internal/models"
 )
 
 type Client struct {
@@ -62,4 +66,25 @@ func (c Client) RemoveDocument(name string) error {
 
 	defer rsp.Body.Close()
 	return checkResponseError(rsp)
+}
+
+func (c Client) SearchByWord(word string) ([]string, error) {
+	uri := c.baseUrl + "/search?q=" + url.QueryEscape(word)
+	r, err := http.NewRequest(http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	rsp, err := http.DefaultClient.Do(r)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rsp.Body.Close()
+	if err := checkResponseError(rsp); err != nil {
+		return nil, err
+	}
+
+	docIDs := new(models.DocumentIDsResponse)
+	return docIDs.IDs, json.NewDecoder(rsp.Body).Decode(docIDs)
 }
