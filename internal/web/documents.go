@@ -37,6 +37,7 @@ func (h DocumentsHandler) UploadDocument(c echo.Context) error {
 		return err
 	}
 
+	c.Response().WriteHeader(http.StatusNoContent)
 	return nil
 }
 
@@ -50,6 +51,8 @@ func (h DocumentsHandler) DeleteDocument(c echo.Context) error {
 		h.log.Error("failed to remove document", zap.String("id", docID), zap.Error(err))
 		return err
 	}
+
+	c.Response().WriteHeader(http.StatusNoContent)
 	return nil
 }
 
