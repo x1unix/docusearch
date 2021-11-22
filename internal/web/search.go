@@ -1,21 +1,21 @@
 package web
 
 import (
-	"go.uber.org/zap"
 	"net/http"
 	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/x1unix/docusearch/internal/models"
-	"github.com/x1unix/docusearch/internal/services"
+	"github.com/x1unix/docusearch/internal/services/search"
+	"go.uber.org/zap"
 )
 
 type SearchHandler struct {
 	log            *zap.Logger
-	searchProvider services.DocumentSearcher
+	searchProvider search.DocumentSearcher
 }
 
-func NewSearchHandler(log *zap.Logger, searchProvider services.DocumentSearcher) *SearchHandler {
+func NewSearchHandler(log *zap.Logger, searchProvider search.DocumentSearcher) *SearchHandler {
 	return &SearchHandler{log: log, searchProvider: searchProvider}
 }
 

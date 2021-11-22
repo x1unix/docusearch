@@ -11,7 +11,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/x1unix/docusearch/internal/config"
-	"github.com/x1unix/docusearch/internal/services"
+	"github.com/x1unix/docusearch/internal/services/search"
 	"github.com/x1unix/docusearch/internal/web"
 	"go.uber.org/zap"
 )
@@ -42,6 +42,7 @@ func start(log *zap.Logger, cfg *config.Config) error {
 		return err
 	}
 
+	defer redisConn.Close()
 	if err := redisConn.Ping(context.Background()).Err(); err != nil {
 		return fmt.Errorf("failed to connect to Redis: %w", err)
 	}
@@ -51,7 +52,7 @@ func start(log *zap.Logger, cfg *config.Config) error {
 	e.Use(echozap.ZapLogger(log))
 	e.Use(middleware.Recover())
 
-	searchProvider := services.NewRedisSearchProvider(log.Named("search.redis"), redisConn)
+	searchProvider := search.NewRedisProvider(log.Named("search.redis"), redisConn)
 	docHandler := web.NewDocumentsHandler(log.Named("handler.docs"), nil)
 	searchHandler := web.NewSearchHandler(log.Named("handler.search"), searchProvider)
 

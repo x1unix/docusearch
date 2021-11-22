@@ -1,4 +1,4 @@
-package services
+package search
 
 import "context"
 
@@ -9,8 +9,8 @@ type DocumentSearcher interface {
 	SearchDocumentsByWord(ctx context.Context, word string) ([]string, error)
 }
 
-// SearchProvider is abstract document search provider.
-type SearchProvider interface {
+// Provider is abstract document search provider.
+type Provider interface {
 	DocumentSearcher
 
 	// AddDocumentRef adds references of specified words to document in search index.

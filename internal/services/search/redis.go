@@ -1,4 +1,4 @@
-package services
+package search
 
 import (
 	"context"
@@ -13,29 +13,29 @@ const (
 	docRecordKeyPrefix = "doc:"
 )
 
-// RedisSearchProvider is redis-based search index.
+// RedisProvider is redis-based search index.
 //
 // Stores word-to-document relationship as inverted index (word -> doc_ids)
 // and doc_id -> record relationships to speed-up read-write operations.
 //
 // Each Redis record is Set to guarantee that each documpanic("implement me")ent ID appears only once.
-type RedisSearchProvider struct {
+type RedisProvider struct {
 	log  *zap.Logger
 	conn redis.Cmdable
 }
 
-func NewRedisSearchProvider(log *zap.Logger, conn redis.Cmdable) *RedisSearchProvider {
-	return &RedisSearchProvider{log: log, conn: conn}
+func NewRedisProvider(log *zap.Logger, conn redis.Cmdable) *RedisProvider {
+	return &RedisProvider{log: log, conn: conn}
 }
 
 // SearchDocumentsByWord implements DocumentSearcher
-func (r RedisSearchProvider) SearchDocumentsByWord(ctx context.Context, word string) ([]string, error) {
+func (r RedisProvider) SearchDocumentsByWord(ctx context.Context, word string) ([]string, error) {
 	key := wordKeyPrefix + word
 	return r.conn.SMembers(ctx, key).Result()
 }
 
 // AddDocumentRef implements SearchProvider
-func (r RedisSearchProvider) AddDocumentRef(ctx context.Context, docId string, words []string) error {
+func (r RedisProvider) AddDocumentRef(ctx context.Context, docId string, words []string) error {
 	tx := r.conn.TxPipeline()
 	for _, word := range words {
 		wordKey := wordKeyPrefix + word
@@ -52,7 +52,7 @@ func (r RedisSearchProvider) AddDocumentRef(ctx context.Context, docId string, w
 }
 
 // RemoveDocumentRef implements SearchProvider
-func (r RedisSearchProvider) RemoveDocumentRef(ctx context.Context, docId string) error {
+func (r RedisProvider) RemoveDocumentRef(ctx context.Context, docId string) error {
 	docIndexKey := docRecordKeyPrefix + docId
 	wordKeys, err := r.conn.LRange(ctx, docIndexKey, 0, -1).Result()
 	if err != nil {
