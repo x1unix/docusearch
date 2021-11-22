@@ -10,7 +10,11 @@ Create a simple service that allows to upload text files and search which text f
 
 See [Quick start quite](#quick-start-guide) below to find out how to start service.
 
-API documentation is available as [Swagger spec file](swagger.yaml). Test files for upload available in [e2e/testdata](e2e/testdata) directory.
+API documentation is available as [Swagger spec file](swagger.yml). Test files for upload available in [e2e/testdata](e2e/testdata) directory.
+
+**Important note:** by default, [file indexing engine](internal/services/search/indexer.go) omits common verbs and articles in English language to reduce index size.
+
+You can control this behavior by changing `ignore_common_words` parameter in config file.
 
 ## How To Run
 
@@ -28,6 +32,8 @@ Ensure that you have [docker-compose](https://docs.docker.com/compose/) and late
 2. Create containers with dependencies using `docker-compose up -d` (only once)
 3. Start containers with `docker-compose start`
 4. Run project using `make run`
+
+Service HTTP listen address is specified in default development config (see [config.dev.yml](config.dev.yml))
 
 ## Testing
 

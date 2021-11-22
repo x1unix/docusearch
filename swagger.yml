@@ -1,0 +1,114 @@
+swagger: "2.0"
+info:
+  description: "Simple document upload and search service."
+  version: "1.0.0"
+  title: "DocuSearch"
+host: "localhost:1080"
+basePath: "/"
+tags:
+  - name: "document"
+    description: "Document management"
+  - name: "search"
+    description: "Document search"
+schemes:
+  - "http"
+paths:
+  /document/{id}:
+    post:
+      tags:
+        - "document"
+      summary: "Add a new document"
+      operationId: "addDocument"
+      consumes:
+        - "text/plain"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Document ID"
+          required: true
+          type: "string"
+      responses:
+        "201":
+          description: "Document created"
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/ApiError"
+    get:
+      tags:
+        - "document"
+      summary: "Get document"
+      operationId: "getDocument"
+      produces:
+        - "text/plain"
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Document ID"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "Document contents"
+        "404":
+          description: "Not found"
+          schema:
+            $ref: "#/definitions/ApiError"
+    delete:
+      tags:
+        - "document"
+      summary: "Delete document"
+      operationId: "deleteDocument"
+      produces:
+        - "text/plain"
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Document ID"
+          required: true
+          type: "string"
+      responses:
+        "201":
+          description: "Success"
+        "404":
+          description: "Not found"
+          schema:
+            $ref: "#/definitions/ApiError"
+  /search:
+    get:
+      tags:
+        - "search"
+      summary: "Search documents by word"
+      operationId: "searchByWord"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "q"
+          in: "query"
+          description: "Word"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "List of found document IDs"
+          schema:
+            $ref: "#/definitions/DocumentIDsList"
+        "404":
+          description: "Not found"
+          schema:
+            $ref: "#/definitions/ApiError"
+definitions:
+  DocumentIDsList:
+    type: "array"
+    items:
+      type: "string"
+  ApiError:
+    type: "object"
+    properties:
+      message:
+        description: "Error message"
+        type: "string"
