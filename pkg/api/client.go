@@ -20,7 +20,7 @@ func NewClient(baseUrl string) *Client {
 }
 
 func (c Client) AddDocument(name string, data io.Reader) error {
-	r, err := http.NewRequest(http.MethodPost, c.baseUrl+"/"+path.Join("document", name), data)
+	r, err := c.newRequest(http.MethodPost, path.Join("document", name), data)
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func (c Client) AddDocument(name string, data io.Reader) error {
 }
 
 func (c Client) GetDocument(name string) ([]byte, error) {
-	r, err := http.NewRequest(http.MethodGet, c.baseUrl+"/"+path.Join("document", name), nil)
+	r, err := c.newRequest(http.MethodGet, path.Join("document", name), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (c Client) GetDocument(name string) ([]byte, error) {
 }
 
 func (c Client) RemoveDocument(name string) error {
-	r, err := http.NewRequest(http.MethodDelete, c.baseUrl+"/"+path.Join("document", name), nil)
+	r, err := c.newRequest(http.MethodDelete, path.Join("document", name), nil)
 	if err != nil {
 		return err
 	}
@@ -69,8 +69,7 @@ func (c Client) RemoveDocument(name string) error {
 }
 
 func (c Client) SearchByWord(word string) ([]string, error) {
-	uri := c.baseUrl + "/search?q=" + url.QueryEscape(word)
-	r, err := http.NewRequest(http.MethodGet, uri, nil)
+	r, err := c.newRequest(http.MethodGet, "search?q="+url.QueryEscape(word), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -87,4 +86,9 @@ func (c Client) SearchByWord(word string) ([]string, error) {
 
 	docIDs := new(models.DocumentIDsResponse)
 	return docIDs.IDs, json.NewDecoder(rsp.Body).Decode(docIDs)
+}
+
+func (c Client) newRequest(method, path string, body io.Reader) (*http.Request, error) {
+	uri := c.baseUrl + "/" + path
+	return http.NewRequest(method, uri, body)
 }
