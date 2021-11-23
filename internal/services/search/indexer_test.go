@@ -38,6 +38,13 @@ func TestWordsFromString(t *testing.T) {
 			},
 			ignoreList: EnglishCommonVerbs.ToArray(),
 		},
+		"empty-ignore-list": {
+			want: []string{
+				"one", "morning", "when", "gregor", "samsa", "woke", "from", "troubled", "dreams", "he", "found",
+				"himself", "transformed", "in", "his", "bed", "into", "a", "horrible", "vermin",
+			},
+			ignoreList: nil,
+		},
 	}
 
 	for name, c := range cases {
